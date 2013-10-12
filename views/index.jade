@@ -3,3 +3,7 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  #workspace
+  script(src="javascripts/patternite.js")
+  script(type='text/javascript').
+    $('#workspace').ready(function(){patternite.workspace_init('workspace')});
