@@ -1,0 +1,5 @@
+pattern format
+	hip,waist,bust,arm length,inseam, etc markers
+	svg+embedded comments?
+	modify svg's programmatically?
+	import new patterns and mark alterable points(hip,waist,etc)
