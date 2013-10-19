@@ -1,16 +1,26 @@
 
-var curve_paths=[
-                [['M',178.54868,-17.76025],['l',257.97797,0],['l',0,-240.65577],['l',35.21919,40.67973],['l',85.85332,-58.08032],['l',-119.87066,-138.47307],['l',-1.20185,0.80992],['l',0,-0.80992]]
-				,[["m",436.52665,-414.28968],['l',-41.04551,0]],
-				[["m",395.48114,-414.28968],["c",-17.07373,35.06983,-50.06563,58.83798,-87.94347,58.83798],['c',-37.87783,0,-70.89587,-23.76815,-87.9696,-58.83798]],
-				[["m",219.56807,-414.28968],['l',-41.01939,0],['l',0,0.80993],['l',-1.20185,-0.80993]],
-				[["m",177.34683,-414.28968,57.45004,-275.8166]],
-				[["m",57.45004,-275.8166],['l',85.85332,58.08031]],
-				[["m",143.30336,-217.73629],['l',35.24532,-40.70586]],
-				[["m",178.54868,-258.44215],['l',0,17.39076]],
-				[["m",178.2464,-146.65788],["c",1.01266,-93.67089,1.51899,-93.67089,1.51899,-93.67089]],
-				[["m",177.23375,-144.12623],['l',-0.50633,124.55696]]
-				];
+
+var new_paths=[
+			[["M",138.54868,426.23975],["L",396.52665,426.23975,396.52665,185.58398,431.74584,226.26371,517.59916,168.18339,397.7285,29.71032,396.52665,30.52024,396.52665,29.71032]]
+			,['alterable']
+			,[["M",396.52665,29.71032],["L",355.48114,29.71032]]
+			,['alterable']
+			,[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
+			,['alterable']
+			,[["M",179.56807,29.71032],["L",138.54868,29.71032,138.54868,30.52025,137.34683,29.71032]]
+			,['alterable']
+			,[["M",137.34683,29.71032],["L",17.45004,168.1834]]
+			,['alterable']
+			,[["M",17.45004,168.1834],["L",103.30336,226.26371]]
+			,['alterable']
+			,[["M",103.30336,226.26371],["L",138.54868,185.55785]]
+			,['alterable']
+			,[["M",138.54868,185.55785],["L",138.54868,202.94861]]
+			,['alterable']
+			,[["M",138.2464,297.34212],["C",139.25906,203.67123,139.76539,203.67123,139.76539,203.67123]]
+			,['alterable']
+			,[["M",137.23375,299.87377],["L",136.72742,424.43073]]
+			]
 var colors=["#000","#f00","#0f0","#00f","#ff0"];
 
 var patternite ={
@@ -56,8 +66,9 @@ var patternite ={
 			var r=Raphael(domid,10000,10000),discattr = {fill: "#000", stroke: "none"};
 			var p=new patternite.Pattern();
 			p.draw(r);
-			r.path("m 178.54868,-17.76025 257.97797,0 0,-240.65577 35.21919,40.67973 85.85332,-58.08032 -119.87066,-138.47307 -1.20185,0.80992 0,-0.80992"
-				).transform('t0,444.02497').attr("stroke",'#000');
+			
+			
+			
 			function curve(x, y, ax, ay, bx, by, zx, zy, color) {
                     var path = [["M", x, y], ["C", ax, ay, bx, by, zx, zy]],
                         path2 = [["M", x, y], ["L", ax, ay], ["M", bx, by], ["L", zx, zy]],
@@ -129,14 +140,11 @@ var patternite ={
                 // curve(270, 100, 310, 100, 330, 200, 370, 200, "hsb(.3, .75, .75)");
                 // curve(370, 100, 410, 100, 430, 200, 470, 200, "hsb(.6, .75, .75)");
                 // curve(470, 100, 510, 100, 530, 200, 570, 200, "hsb(.1, .75, .75)");
-                
-
-
 		});
 	},
 	nullfunction: function(){return null;},
 	Pattern: function(){
-		this.paths=curve_paths;
+		this.paths=new_paths;
 		//console.log(paths);
 
 	},
@@ -146,10 +154,61 @@ var patternite ={
 
 patternite.Pattern.prototype={
 	constructor: patternite.Pattern,
+	
 	draw:function(raphael_container){
-		console.log(this.paths);
+		var prev_path;
+		var discattr = {fill: "#000", stroke: "none"};
 		for(var i=0;i<this.paths.length;i++){
-			raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5").transform("t0,444.02497");
+			if(this.paths[i][0]=='alterable'){
+				console.log('alterable');
+
+				i++;
+				
+				var current_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5")
+				this.paths[i-1][1]=prev_path;
+				this.paths[i-1][2]=current_path;
+
+				var control=raphael_container.circle(this.paths[i][0][1], this.paths[i][0][2], 5).attr(discattr)
+				control.dx=this.paths[i][0][1];
+				control.dy=this.paths[i][0][2];
+				control.parent_pattern=this;
+				control.current_index=i;
+				control.prev_index=i-2;
+
+				control.update= function(x,y){
+					//this.parepath[0][1]=path[0][2]=0;
+					console.log(this.parent_pattern);
+					var X = this.attr("cx") + x,
+			                Y = this.attr("cy") + y;
+			            
+			            
+					this.parent_pattern.paths[this.current_index][0][1]=X;
+					this.parent_pattern.paths[this.current_index][0][2]=Y;
+					console.log(this.parent_pattern.paths[this.current_index][0]);
+
+					var prev_len= this.parent_pattern.paths[this.prev_index].length;
+					var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
+
+					this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+					this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+
+					console.log(this.parent_pattern.paths[this.prev_index][prev_len-1]);
+
+					this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
+					this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]})
+					this.attr({cx: X, cy: Y});
+				};
+				control.drag(function(dx,dy){
+					this.update(dx - (this.dx || 0), dy - (this.dy || 0));
+                    this.dx= dx;
+                    this.dy= dy;
+				},function(){
+					this.dx=this.dy=0;
+				});
+				prev_path=current_path;
+			}else{
+				prev_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5");
+			}
 		}
 	}
 };
