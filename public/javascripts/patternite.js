@@ -248,26 +248,24 @@ var patternite ={
 
 patternite.Pattern.prototype={
 	constructor: patternite.Pattern,
-	
-	draw:function(raphael_container){
-		var prev_path;
+	createGroupFromList:function(raphael_container,paths,mirror_matrix){
+		var element_list=[];
 		var discattr = {fill: "#000", stroke: "none"};
-		var left_side_set=[];
-		var right_side_set=new raphael_container.set();
+		var prev_path;
 		for(var i=0;i<this.paths.length;i++){
-			if(this.paths[i][0]=='alterable'){
+			if(paths[i][0]=='alterable'){
 				console.log('alterable');
 
 				i++;
 				
-				var current_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5")
+				var current_path=raphael_container.path(paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5")
 				
-				this.paths[i-1][1]=prev_path;
-				this.paths[i-1][2]=current_path;
+				paths[i-1][1]=prev_path;
+				paths[i-1][2]=current_path;
 
-				var control=raphael_container.circle(this.paths[i][0][1], this.paths[i][0][2], 5).attr(discattr)
-				control.dx=this.paths[i][0][1];
-				control.dy=this.paths[i][0][2];
+				var control=raphael_container.circle(paths[i][0][1], paths[i][0][2], 5).attr(discattr)
+				control.dx=paths[i][0][1];
+				control.dy=paths[i][0][2];
 				control.parent_pattern=this;
 				control.current_index=i;
 				control.prev_index=i-2;
@@ -275,10 +273,18 @@ patternite.Pattern.prototype={
 				control.update= function(x,y){
 					//this.parepath[0][1]=path[0][2]=0;
 					console.log(this.parent_pattern);
-					var X = this.attr("cx") + x,// -x here for correct mirror behavior
-			                Y = this.attr("cy") + y;
-			            
-			            
+					var X,Y;
+					if(mirror_matrix[0]){
+						X = this.attr("cx") - x;
+					}else{
+						X = this.attr("cx") + x;
+					}
+					if(mirror_matrix[1]){
+						Y = this.attr("cy") - y;
+					}else{
+						Y = this.attr("cy") + y;
+					}
+
 					this.parent_pattern.paths[this.current_index][0][1]=X;
 					this.parent_pattern.paths[this.current_index][0][2]=Y;
 					console.log(this.parent_pattern.paths[this.current_index][0]);
@@ -302,20 +308,33 @@ patternite.Pattern.prototype={
 				},function(){
 					this.dx=this.dy=0;
 				});
-				left_side_set.push(control);
+				element_list.push(control);
 				prev_path=current_path;
 			}else{
-				prev_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5");
+				prev_path=raphael_container.path(paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5");
 			}
-			left_side_set.push(prev_path);
+			element_list.push(prev_path);
 
 		}
-		var g=raphael_container.group(0,left_side_set);
+		//var g = raphael_container.group(0,element_list);
+		//return g;
+		return element_list
+
+	},
+	draw:function(raphael_container){
+		
+		
+		
+		
+		var left_group=this.createGroupFromList(raphael_container,this.paths,[false,false]);
+		var right_group=this.createGroupFromList(raphael_container,this.paths,[true,false]);
+		var g= raphael_container.group(0,right_group);
 		g.scale(-1,1);
-		g.translate(600,0);
-		console.log(left_side_set);
-		//left_side_set.scale(-1,1);
-		//left_side_set.rotate(30);//(-1,1);
-		//raphael_container.rotate(30);
+		g.translate(500,0);
+
+		//right_group.scale(-1,1);
+		//right_group.translate(500,0);
+		
+		
 	}
 };
