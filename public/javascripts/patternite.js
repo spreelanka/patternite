@@ -1,13 +1,106 @@
-
+//Raphael group plugin
+(function() {
+    Raphael.fn.group = function(f, g) {
+        var enabled = document.getElementsByTagName("svg").length > 0;
+        if (!enabled) {
+            // return a stub for VML compatibility
+            return {
+                add : function() {
+                    // intentionally left blank
+                }
+            };
+        }
+      this.svg = "http://www.w3.org/2000/svg";
+      this.defs = document.getElementsByTagName("defs")[f];
+      this.svgcanv = document.getElementsByTagName("svg")[f];
+      this.group = document.createElementNS(this.svg, "g");
+      for(i = 0;i < g.length;i++) {
+        this.group.appendChild(g[i].node)
+      }
+      this.svgcanv.appendChild(this.group);
+      this.group.translate = function(c, a) {
+        this.setAttribute("transform", "translate(" + c + "," + a + ") scale(" + this.getAttr("scale").x + "," + this.getAttr("scale").y + ")")
+      };
+      this.group.rotate = function(c, a, e) {
+        this.setAttribute("transform", "translate(" + this.getAttr("translate").x + "," + this.getAttr("translate").y + ") scale(" + this.getAttr("scale").x + "," + this.getAttr("scale").y + ") rotate(" + c + "," + a + "," + e + ")")
+      };
+      this.group.scale = function(c, a) {
+        this.setAttribute("transform", "scale(" + c + "," + a + ") translate(" + this.getAttr("translate").x + "," + this.getAttr("translate").y + ")")
+      };
+      this.group.push = function(c) {
+        this.appendChild(c.node)
+      };
+      this.group.getAttr = function(c) {
+        this.previous = this.getAttribute("transform") ? this.getAttribute("transform") : "";
+        var a = [], e, h, j;
+        a = this.previous.split(" ");
+        for(i = 0;i < a.length;i++) {
+          if(a[i].substring(0, 1) == "t") {
+            var d = a[i], b = [];
+            b = d.split("(");
+            d = b[1].substring(0, b[1].length - 1);
+            b = [];
+            b = d.split(",");
+            e = b.length == 0 ? {x:0, y:0} : {x:b[0], y:b[1]}
+          }else {
+            if(a[i].substring(0, 1) == "r") {
+              d = a[i];
+              b = d.split("(");
+              d = b[1].substring(0, b[1].length - 1);
+              b = d.split(",");
+              h = b.length == 0 ? {x:0, y:0, z:0} : {x:b[0], y:b[1], z:b[2]}
+            }else {
+              if(a[i].substring(0, 1) == "s") {
+                d = a[i];
+                b = d.split("(");
+                d = b[1].substring(0, b[1].length - 1);
+                b = d.split(",");
+                j = b.length == 0 ? {x:1, y:1} : {x:b[0], y:b[1]}
+              }
+            }
+          }
+        }
+        if(e == undefined) {
+          e = {x:0, y:0}
+        }
+        if(h == undefined) {
+          h = {x:0, y:0, z:0}
+        }
+        if(j == undefined) {
+          j = {x:1, y:1}
+        }
+        if(c == "translate") {
+          var k = e
+        }else {
+          if(c == "rotate") {
+            k = h
+          }else {
+            if(c == "scale") {
+              k = j
+            }
+          }
+        }
+        return k
+      };
+      this.group.copy = function(el){
+         this.copy = el.node.cloneNode(true);
+         this.appendChild(this.copy);
+      }
+      return this.group
+    };
+})();
+//end Raphael group plugin
 
 var new_paths=[
-			[["M",138.54868,426.23975],["L",396.52665,426.23975,396.52665,185.58398,431.74584,226.26371,517.59916,168.18339,397.7285,29.71032,396.52665,30.52024,396.52665,29.71032]]
+			//[["M",138.54868,426.23975],["L",396.52665,426.23975,396.52665,185.58398,431.74584,226.26371,517.59916,168.18339,397.7285,29.71032,396.52665,30.52024,396.52665,29.71032]]
+			//,['alterable']
+			//,[["M",396.52665,29.71032],["L",355.48114,29.71032]]
+			//,['alterable']
+			//[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483
+			//]]//,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
+			[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
 			,['alterable']
-			,[["M",396.52665,29.71032],["L",355.48114,29.71032]]
-			,['alterable']
-			,[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
-			,['alterable']
-			,[["M",179.56807,29.71032],["L",138.54868,29.71032,138.54868,30.52025,137.34683,29.71032]]
+			,[["M",179.56807,29.71032],["L",137.34683,29.71032]]
 			,['alterable']
 			,[["M",137.34683,29.71032],["L",17.45004,168.1834]]
 			,['alterable']
@@ -17,7 +110,8 @@ var new_paths=[
 			,['alterable']
 			,[["M",138.54868,185.55785],["L",138.54868,202.94861]]
 			,['alterable']
-			,[["M",138.2464,297.34212],["C",139.25906,203.67123,139.76539,203.67123,139.76539,203.67123]]
+			//,[["M",138.2464,297.34212],["C",139.25906,203.67123,139.76539,203.67123,139.76539,203.67123]]
+			,[["M",138.54868,202.94861],["L",138.54868,299.87377]]
 			,['alterable']
 			,[["M",137.23375,299.87377],["L",136.72742,424.43073]]
 			]
@@ -158,6 +252,8 @@ patternite.Pattern.prototype={
 	draw:function(raphael_container){
 		var prev_path;
 		var discattr = {fill: "#000", stroke: "none"};
+		var left_side_set=[];
+		var right_side_set=new raphael_container.set();
 		for(var i=0;i<this.paths.length;i++){
 			if(this.paths[i][0]=='alterable'){
 				console.log('alterable');
@@ -165,6 +261,7 @@ patternite.Pattern.prototype={
 				i++;
 				
 				var current_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5")
+				
 				this.paths[i-1][1]=prev_path;
 				this.paths[i-1][2]=current_path;
 
@@ -178,7 +275,7 @@ patternite.Pattern.prototype={
 				control.update= function(x,y){
 					//this.parepath[0][1]=path[0][2]=0;
 					console.log(this.parent_pattern);
-					var X = this.attr("cx") + x,
+					var X = this.attr("cx") + x,// -x here for correct mirror behavior
 			                Y = this.attr("cy") + y;
 			            
 			            
@@ -205,10 +302,20 @@ patternite.Pattern.prototype={
 				},function(){
 					this.dx=this.dy=0;
 				});
+				left_side_set.push(control);
 				prev_path=current_path;
 			}else{
 				prev_path=raphael_container.path(this.paths[i]).attr({stroke: "hsb(0,.75,.75)"}).attr("stroke-width", "5");
 			}
+			left_side_set.push(prev_path);
+
 		}
+		var g=raphael_container.group(0,left_side_set);
+		g.scale(-1,1);
+		g.translate(600,0);
+		console.log(left_side_set);
+		//left_side_set.scale(-1,1);
+		//left_side_set.rotate(30);//(-1,1);
+		//raphael_container.rotate(30);
 	}
 };
