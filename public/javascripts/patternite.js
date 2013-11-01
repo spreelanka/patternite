@@ -1,3 +1,4 @@
+var grp;
 //Raphael group plugin
 (function() {
     Raphael.fn.group = function(f, g) {
@@ -92,6 +93,30 @@
 //end Raphael group plugin
 
 var new_paths=[
+			//[["M",138.54868,426.23975],["L",396.52665,426.23975,396.52665,185.58398,431.74584,226.26371,517.59916,168.18339,397.7285,29.71032,396.52665,30.52024,396.52665,29.71032]]
+			//,['alterable']
+			//,[["M",396.52665,29.71032],["L",355.48114,29.71032]]
+			//,['alterable']
+			//[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483
+			//]]//,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
+			[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
+			,['alterable']
+			,[["M",179.56807,29.71032],["L",137.34683,29.71032]]
+			,['alterable']
+			,[["M",137.34683,29.71032],["L",17.45004,168.1834]]
+			,['alterable']
+			,[["M",17.45004,168.1834],["L",103.30336,226.26371]]
+			,['alterable']
+			,[["M",103.30336,226.26371],["L",138.54868,185.55785]]
+			,['alterable']
+			,[["M",138.54868,185.55785],["L",138.54868,202.94861]]
+			,['alterable']
+			//,[["M",138.2464,297.34212],["C",139.25906,203.67123,139.76539,203.67123,139.76539,203.67123]]
+			,[["M",138.54868,202.94861],["L",138.54868,299.87377]]
+			,['alterable']
+			,[["M",137.23375,299.87377],["L",136.72742,424.43073]]
+			]
+var new_mirror_paths=[
 			//[["M",138.54868,426.23975],["L",396.52665,426.23975,396.52665,185.58398,431.74584,226.26371,517.59916,168.18339,397.7285,29.71032,396.52665,30.52024,396.52665,29.71032]]
 			//,['alterable']
 			//,[["M",396.52665,29.71032],["L",355.48114,29.71032]]
@@ -239,6 +264,7 @@ var patternite ={
 	nullfunction: function(){return null;},
 	Pattern: function(){
 		this.paths=new_paths;
+		this.mirror_paths=new_mirror_paths;
 		//console.log(paths);
 
 	},
@@ -252,7 +278,7 @@ patternite.Pattern.prototype={
 		var element_list=[];
 		var discattr = {fill: "#000", stroke: "none"};
 		var prev_path;
-		for(var i=0;i<this.paths.length;i++){
+		for(var i=0;i<paths.length;i++){
 			if(paths[i][0]=='alterable'){
 				console.log('alterable');
 
@@ -269,38 +295,55 @@ patternite.Pattern.prototype={
 				control.parent_pattern=this;
 				control.current_index=i;
 				control.prev_index=i-2;
-
-				control.update= function(x,y){
-					//this.parepath[0][1]=path[0][2]=0;
-					console.log(this.parent_pattern);
-					var X,Y;
-					if(mirror_matrix[0]){
+				if(mirror_matrix[0]){
+					control.update= function(x,y){
+						
+						var X,Y;
 						X = this.attr("cx") - x;
-					}else{
-						X = this.attr("cx") + x;
-					}
-					if(mirror_matrix[1]){
-						Y = this.attr("cy") - y;
-					}else{
 						Y = this.attr("cy") + y;
-					}
 
-					this.parent_pattern.paths[this.current_index][0][1]=X;
-					this.parent_pattern.paths[this.current_index][0][2]=Y;
-					console.log(this.parent_pattern.paths[this.current_index][0]);
+						this.parent_pattern.mirror_paths[this.current_index][0][1]=X;
+						this.parent_pattern.mirror_paths[this.current_index][0][2]=Y;
+						
 
-					var prev_len= this.parent_pattern.paths[this.prev_index].length;
-					var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
+						var prev_len= this.parent_pattern.mirror_paths[this.prev_index].length;
+						var prev_last_seg_len=this.parent_pattern.mirror_paths[this.prev_index][prev_len-1].length;
 
-					this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
-					this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
 
-					console.log(this.parent_pattern.paths[this.prev_index][prev_len-1]);
+						
 
-					this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
-					this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]})
-					this.attr({cx: X, cy: Y});
-				};
+						this.parent_pattern.mirror_paths[this.prev_index+1][2].attr({path:this.parent_pattern.mirror_paths[this.current_index]});
+						this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
+						this.attr({cx: X, cy: Y});
+						
+					};
+				}else{
+					control.update= function(x,y){
+						var X,Y;
+
+						X = this.attr("cx") + x;
+						Y = this.attr("cy") + y;
+
+					
+						this.parent_pattern.paths[this.current_index][0][1]=X;
+						this.parent_pattern.paths[this.current_index][0][2]=Y;
+						
+
+						var prev_len= this.parent_pattern.paths[this.prev_index].length;
+						var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
+
+						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+
+						
+
+						this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
+						this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]})
+						this.attr({cx: X, cy: Y});
+					};
+				}
 				control.drag(function(dx,dy){
 					this.update(dx - (this.dx || 0), dy - (this.dy || 0));
                     this.dx= dx;
@@ -308,6 +351,7 @@ patternite.Pattern.prototype={
 				},function(){
 					this.dx=this.dy=0;
 				});
+				
 				element_list.push(control);
 				prev_path=current_path;
 			}else{
@@ -319,19 +363,22 @@ patternite.Pattern.prototype={
 		//var g = raphael_container.group(0,element_list);
 		//return g;
 		return element_list
-
 	},
 	draw:function(raphael_container){
 		
-		
-		
-		
 		var left_group=this.createGroupFromList(raphael_container,this.paths,[false,false]);
-		var right_group=this.createGroupFromList(raphael_container,this.paths,[true,false]);
-		var g= raphael_container.group(0,right_group);
+		var right_group=this.createGroupFromList(raphael_container,this.mirror_paths,[true,false]);
+		
+		var g = raphael_container.group(0,right_group);
 		g.scale(-1,1);
-		g.translate(500,0);
-
+		console.log(g.getBBox().width*2);
+		console.log(g.width*2);
+		g.translate(g.getBBox().width*2+18,0);
+		//g.translate(256*2,0);
+		grp = g;
+		
+		
+		//g.translate(535,0);
 		//right_group.scale(-1,1);
 		//right_group.translate(500,0);
 		
