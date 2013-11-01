@@ -100,7 +100,7 @@ var new_paths=[
 			//[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483
 			//]]//,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
 			[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
-			,['alterable']
+			,['alterable',0]
 			,[["M",179.56807,29.71032],["L",137.34683,29.71032]]
 			,['alterable']
 			,[["M",137.34683,29.71032],["L",17.45004,168.1834]]
@@ -124,7 +124,7 @@ var new_mirror_paths=[
 			//[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483
 			//]]//,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
 			[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
-			,['alterable']
+			,['alterable',0]
 			,[["M",179.56807,29.71032],["L",137.34683,29.71032]]
 			,['alterable']
 			,[["M",137.34683,29.71032],["L",17.45004,168.1834]]
@@ -295,11 +295,13 @@ patternite.Pattern.prototype={
 				control.parent_pattern=this;
 				control.current_index=i;
 				control.prev_index=i-2;
+				paths[i-1][3]=control;
 				if(mirror_matrix[0]){
 					control.update= function(x,y){
 						
 						var X,Y;
 						X = this.attr("cx") - x;
+						var MX=this.attr("cx")+x;
 						Y = this.attr("cy") + y;
 
 						this.parent_pattern.mirror_paths[this.current_index][0][1]=X;
@@ -318,12 +320,29 @@ patternite.Pattern.prototype={
 						this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
 						this.attr({cx: X, cy: Y});
 						
+						X=MX;
+						this.parent_pattern.paths[this.current_index][0][1]=X;
+						this.parent_pattern.paths[this.current_index][0][2]=Y;
+						
+
+						var prev_len= this.parent_pattern.paths[this.prev_index].length;
+						var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
+
+						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+
+						
+
+						this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
+						this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]});
+						this.parent_pattern.paths[this.prev_index+1][3].attr({cx: X,cy: Y});
 					};
 				}else{
 					control.update= function(x,y){
 						var X,Y;
 
 						X = this.attr("cx") + x;
+						var MX=this.attr("cx")-x;
 						Y = this.attr("cy") + y;
 
 					
@@ -340,8 +359,27 @@ patternite.Pattern.prototype={
 						
 
 						this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
-						this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]})
+						this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]});
 						this.attr({cx: X, cy: Y});
+						
+						X=MX;
+						this.parent_pattern.mirror_paths[this.current_index][0][1]=X;
+						this.parent_pattern.mirror_paths[this.current_index][0][2]=Y;
+						
+
+						var prev_len= this.parent_pattern.mirror_paths[this.prev_index].length;
+						var prev_last_seg_len=this.parent_pattern.mirror_paths[this.prev_index][prev_len-1].length;
+
+						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+
+						
+
+						this.parent_pattern.mirror_paths[this.prev_index+1][2].attr({path:this.parent_pattern.mirror_paths[this.current_index]});
+						this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
+						
+						this.parent_pattern.mirror_paths[this.prev_index+1][3].attr({cx: X,cy: Y});
+						
 					};
 				}
 				control.drag(function(dx,dy){
