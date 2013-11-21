@@ -319,7 +319,7 @@ patternite.Pattern.prototype={
 						this.parent_pattern.mirror_paths[this.prev_index+1][2].attr({path:this.parent_pattern.mirror_paths[this.current_index]});
 						this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
 						this.attr({cx: X, cy: Y});
-						
+						//this.parent_pattern.paths[this.prev_index+1][3].update(x,y);
 						X=MX;
 						this.parent_pattern.paths[this.current_index][0][1]=X;
 						this.parent_pattern.paths[this.current_index][0][2]=Y;
@@ -339,46 +339,47 @@ patternite.Pattern.prototype={
 					};
 				}else{
 					control.update= function(x,y){
-						var X,Y;
+						// var X,Y;
 
-						X = this.attr("cx") + x;
-						var MX=this.attr("cx")-x;
-						Y = this.attr("cy") + y;
+						// X = this.attr("cx") + x;
+						// //var MX=this.attr("cx")-x;
+						// Y = this.attr("cy") + y;
 
 					
-						this.parent_pattern.paths[this.current_index][0][1]=X;
-						this.parent_pattern.paths[this.current_index][0][2]=Y;
+						// this.parent_pattern.paths[this.current_index][0][1]=X;
+						// this.parent_pattern.paths[this.current_index][0][2]=Y;
 						
 
-						var prev_len= this.parent_pattern.paths[this.prev_index].length;
-						var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
+						// var prev_len= this.parent_pattern.paths[this.prev_index].length;
+						// var prev_last_seg_len=this.parent_pattern.paths[this.prev_index][prev_len-1].length;
 
-						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
-						this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
-
-						
-
-						this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
-						this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]});
-						this.attr({cx: X, cy: Y});
-						
-						X=MX;
-						this.parent_pattern.mirror_paths[this.current_index][0][1]=X;
-						this.parent_pattern.mirror_paths[this.current_index][0][2]=Y;
-						
-
-						var prev_len= this.parent_pattern.mirror_paths[this.prev_index].length;
-						var prev_last_seg_len=this.parent_pattern.mirror_paths[this.prev_index][prev_len-1].length;
-
-						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
-						this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+						// this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						// this.parent_pattern.paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
 
 						
 
-						this.parent_pattern.mirror_paths[this.prev_index+1][2].attr({path:this.parent_pattern.mirror_paths[this.current_index]});
-						this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
+						// this.parent_pattern.paths[this.prev_index+1][2].attr({path:this.parent_pattern.paths[this.current_index]});
+						// this.parent_pattern.paths[this.prev_index+1][1].attr({path:this.parent_pattern.paths[this.prev_index]});
+						// this.attr({cx: X, cy: Y});
+						this.parent_pattern.mirror_paths[this.prev_index+1][3].update(-x,y);
 						
-						this.parent_pattern.mirror_paths[this.prev_index+1][3].attr({cx: X,cy: Y});
+						// X=MX;
+						// this.parent_pattern.mirror_paths[this.current_index][0][1]=X;
+						// this.parent_pattern.mirror_paths[this.current_index][0][2]=Y;
+						
+
+						// var prev_len= this.parent_pattern.mirror_paths[this.prev_index].length;
+						// var prev_last_seg_len=this.parent_pattern.mirror_paths[this.prev_index][prev_len-1].length;
+
+						// this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-2]=X;
+						// this.parent_pattern.mirror_paths[this.prev_index][prev_len-1][prev_last_seg_len-1]=Y;
+
+						
+
+						// this.parent_pattern.mirror_paths[this.prev_index+1][2].attr({path:this.parent_pattern.mirror_paths[this.current_index]});
+						// this.parent_pattern.mirror_paths[this.prev_index+1][1].attr({path:this.parent_pattern.mirror_paths[this.prev_index]})
+						
+						// this.parent_pattern.mirror_paths[this.prev_index+1][3].attr({cx: X,cy: Y});
 						
 					};
 				}
@@ -409,11 +410,13 @@ patternite.Pattern.prototype={
 		
 		var g = raphael_container.group(0,right_group);
 		g.scale(-1,1);
-		console.log(g.getBBox().width*2);
-		console.log(g.width*2);
 		g.translate(g.getBBox().width*2+18,0);
 		//g.translate(256*2,0);
 		grp = g;
+		setTimeout(function(){
+			
+
+		},3000);
 		
 		
 		//g.translate(535,0);
