@@ -13,7 +13,15 @@ exports.index = function(req, res){
   
   model.sequelize.sync().done(function(){console.log('hellooooaaa');});
   var file_contents=fs.readFileSync("public/images/tshirt_scaled.svg")
-  res.render('index', { title: 'Patternite' , svg: file_contents});
+  model.Pattern.findAll({include: [model.PatternSegment]}).success(function(p){
+  	console.log(JSON.stringify(p));
+
+  	res.render('index', { title: 'Patternite' , 
+  		svg: file_contents, 
+  		pattern: JSON.stringify(p)});
+  });
+  
+  
 
 };
 

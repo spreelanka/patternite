@@ -15,6 +15,7 @@ var Pattern = sequelize.define('Pattern',{
 
 var PatternSegment = sequelize.define('PatternSegment',{
 	curve: Sequelize.STRING
+	,order: Sequelize.INTEGER
 	//side effects?
 });
 
@@ -34,7 +35,9 @@ var new_paths=[
 			//,['alterable']
 			//[["M",355.48114,29.71032],["C",338.40741,64.78015,305.41551,88.5483,267.53767,88.5483
 			//]]//,229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
-			[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
+
+			['begin']
+			,[["M",267.53767,88.5483],["C",229.65984,88.5483,196.6418,64.78015,179.56807,29.71032]]
 			,['alterable',0]
 			,[["M",179.56807,29.71032],["L",137.34683,29.71032]]
 			,['alterable']
@@ -50,18 +53,15 @@ var new_paths=[
 			,[["M",138.54868,202.94861],["L",138.54868,299.87377]]
 			,['alterable']
 			,[["M",137.23375,299.87377],["L",136.72742,424.43073]]
+			,['end']
 			]
 ;
 Pattern.create({name:'tshirt mockup'}).success(function(pattern){
 	for(var i=0;i<new_paths.length;i++){
-		if(new_paths[i][0]!='alterable'){
-			PatternSegment.create({curve:new_paths[i].toString()}).success(function(ps){
-				console.log('printing patternsegment');
-				console.log(ps);
+		if(true){
+			PatternSegment.create({curve:JSON.stringify(new_paths[i]),order:i}).success(function(ps){
 				ps.setPattern(pattern);
-				
 			});
-			
 		}
 	}
 	sequelize.sync().done(function(){console.log('mock data loaded');});
