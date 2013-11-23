@@ -11,7 +11,13 @@ var sequelize = new Sequelize('patternite', 'root', 'root'
 
 var Pattern = sequelize.define('Pattern',{
 	name: Sequelize.STRING
-});
+}
+// ,{
+// 	instanceMethods:{
+
+// 	}
+// }
+);
 
 var PatternSegment = sequelize.define('PatternSegment',{
 	curve: Sequelize.STRING

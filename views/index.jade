@@ -8,8 +8,13 @@ block content
 
   script(src="javascripts/patternite.js")
   script(type='text/javascript').
-    $('#workspace').ready(function(){patternite.workspace_init('workspace')});
+    var p= new patternite.Pattern(!{pattern});
+    console.log(p);
+    $('#workspace').ready(function(){
+        patternite.workspace_init('workspace',p);
+        });
 
-    console.log(patternite.Pattern.prototype.constructor);
-    console.log(!{pattern});
-    console.log(JSON.parse('!{pattern}'));
+    
+    
+
+    

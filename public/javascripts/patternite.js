@@ -143,7 +143,7 @@ var new_mirror_paths=[
 var colors=["#000","#f00","#0f0","#00f","#ff0"];
 
 var patternite ={
-	workspace_init: function(domid){
+	workspace_init: function(domid,p){
 		$("#"+domid).ready(function(){
 			
 			// var curve_paths=["m 178.54868,-17.76025 257.97797,0 0,-240.65577 35.21919,40.67973 85.85332,-58.08032 -119.87066,-138.47307 -1.20185,0.80992 0,-0.80992"
@@ -183,8 +183,10 @@ var patternite ={
 			// 	});
 			// }
 			var r=Raphael(domid,10000,10000),discattr = {fill: "#000", stroke: "none"};
-			var p=new patternite.Pattern();
+			//var p=new patternite.Pattern();
+      console.log(p);
 			p.draw(r);
+      //pattern.draw(r);
 			
 			
 			
@@ -262,10 +264,11 @@ var patternite ={
 		});
 	},
 	nullfunction: function(){return null;},
-	Pattern: function(){
-		this.paths=new_paths;
-		this.mirror_paths=new_mirror_paths;
-		//console.log(paths);
+	Pattern: function(paths_){
+    console.log(paths_);
+		this.paths=paths_;
+		this.mirror_paths=JSON.parse(JSON.stringify(paths_));
+		
 
 	},
 
@@ -279,6 +282,11 @@ patternite.Pattern.prototype={
 		var discattr = {fill: "#000", stroke: "none"};
 		var prev_path;
 		for(var i=0;i<paths.length;i++){
+      if(paths[i][0]=='begin'){
+        i++;
+      }else if(paths[i][0]=='end'){
+        break;
+      }
 			if(paths[i][0]=='alterable'){
 				console.log('alterable');
 
