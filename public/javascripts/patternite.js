@@ -145,11 +145,38 @@ var colors=["#000","#f00","#0f0","#00f","#ff0"];
 var patternite ={
 	workspace_init: function(domid,p){
 		$("#"+domid).ready(function(){
-			
+			console.log(JSON.stringify(p.paths));
+
       var save_button=$('<div id="save_button"></div>');
 
       save_button.append('save');
-      save_button.click(function(){console.log('clicked')});
+      save_button.click(function(){
+        console.log('clicked');
+        //since we are storing prev/next paths in this intersection, 
+        //we have to remove it to stringify
+        var data=JSON.stringify(p.paths.map(function(e){
+          if(e[0]=='alterable'){
+            return ['alterable']
+          }else{
+            return e;
+          }
+
+        }));
+        
+
+        $.ajax({
+          type: "POST",
+          //the url where you want to sent the userName and password to
+          url: '/editpattern/save',
+          dataType: 'json',
+          async: true,
+          //json object to sent to the authentication url
+          data: {paths:data},//data,///p,//JSON.stringify(p.paths),
+          success: function () {
+            alert("Thanks!"); 
+          }
+        });
+      });
       save_button.addClass('patternite-button');
       $("#"+domid).append(save_button);
       var pattern_edit_div=$("#"+domid).append($('<div id="'+domid+'_raphael"></div>'));
@@ -238,8 +265,6 @@ var patternite ={
     console.log(paths_);
 		this.paths=paths_;
 		this.mirror_paths=JSON.parse(JSON.stringify(paths_));
-		
-
 	},
 
 
