@@ -8,6 +8,8 @@
   "dependencies": {
     "express": "3.4.0",
     "jade": "*",
-    "stylus": "*"
+    "stylus": "*",
+    "connect-mysql": "0.3.x"
   }
+
 }
