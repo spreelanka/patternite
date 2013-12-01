@@ -1,5 +1,6 @@
 //console.log('hello');
 var Sequelize=require("sequelize");
+var crypto=require('crypto');
 
 
 var sequelize = new Sequelize('patternite', 'root', 'root'
@@ -28,7 +29,31 @@ var PatternSegment = sequelize.define('PatternSegment',{
 PatternSegment.belongsTo(Pattern);
 Pattern.hasMany(PatternSegment);
 
+var User = sequelize.define('User',{
+	username: Sequelize.STRING,
+	password: Sequelize.STRING,
+	salt: Sequelize.STRING
+},
+{
+	instanceMethods: {
+	encryptPassword: function (password) {
+	    if (!password) return ''
+	    var encrypted
+	    try {
+	      encrypted = crypto.createHmac('sha1', this.salt).update(password).digest('hex')
+	      return encrypted
+	    } catch (err) {
+	      return ''
+	    }
+	  },
+    validPassword: function(password) { return this.encryptPassword(password)===this.password},
+    makeSalt: function(){return crypto.randomBytes(256);}
+  }
+
+});
+
 //development stuff, drops tables
+User.sync({force:true});
 Pattern.sync({force:true});
 PatternSegment.sync({force:true});
 
@@ -70,7 +95,15 @@ Pattern.create({name:'tshirt mockup'}).success(function(pattern){
 			});
 		}
 	}
-	sequelize.sync().done(function(){console.log('mock data loaded');});
+
+	var plaintext_password='password';
+	User.create({username:'test',
+		}).success(function(user){
+			user.salt=user.makeSalt();
+			user.password=user.encryptPassword(plaintext_password);
+			sequelize.sync().done(function(){console.log('mock data loaded');});
+		});
+	
 });
 
 
